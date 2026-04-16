@@ -15,3 +15,5 @@ v5.4 Program Workout Mapping: Program selection now changes the Train tab workou
 v5.4.1 program fix: program selection now force-refreshes Train and Home immediately.
 
 v5.5 Progress Engine: adds Progress tab, weight/waist change, compliance, weekly score, and scorecard.
+
+v5.5.1 Navigation Repair: restores Programs tab visibility and stable mobile tab navigation with horizontal scrolling.

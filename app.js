@@ -706,3 +706,48 @@ if (typeof renderHome === 'function') {
 setTimeout(() => {
   try { renderProgressEngine(); } catch(e) {}
 }, 120);
+
+
+/* ===== v5.5.1 Navigation Repair ===== */
+function repairTabsNavigation(){
+  try{
+    const tabsContainer = document.querySelector('.tabs');
+    if (!tabsContainer) return;
+
+    tabsContainer.addEventListener('click', function(ev){
+      const btn = ev.target.closest('.tab');
+      if (!btn) return;
+      const targetId = btn.dataset.t;
+      const targetPanel = document.getElementById(targetId);
+      if (!targetPanel) {
+        console.log('Missing panel for tab', targetId);
+        return;
+      }
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+      btn.classList.add('active');
+      targetPanel.classList.add('active');
+
+      if (targetId === 'train' && typeof renderTrainByProgram === 'function') {
+        renderTrainByProgram();
+      }
+      if (targetId === 'progress' && typeof renderProgressEngine === 'function') {
+        renderProgressEngine();
+      }
+      if (targetId === 'programs') {
+        document.querySelectorAll('.prog').forEach(p => p.classList.toggle('active', p.dataset.p === ((typeof gp === 'function') ? gp() : '30 Day Reset')));
+      }
+    }, { once:false });
+  }catch(err){
+    console.log('repairTabsNavigation error', err);
+  }
+}
+
+setTimeout(() => {
+  repairTabsNavigation();
+  try{
+    if (typeof renderTrainByProgram === 'function') renderTrainByProgram();
+    if (typeof renderProgressEngine === 'function') renderProgressEngine();
+    if (typeof renderHome === 'function') renderHome();
+  }catch(e){}
+}, 150);
