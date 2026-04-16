@@ -1,0 +1,68 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Savage Metabo v5.0</title><link rel="stylesheet" href="styles.css"></head><body><div class="app">
+<header class="hero"><div class="eyebrow">Carnivore Command Center</div><h1>Savage Metabo</h1><div class="sub">Founder Edition v5.0</div><div class="banner"><div><div class="small">Daily Operating System</div><div class="headline">Rebuild metabolism. Build momentum.</div></div><div class="badge">FOUNDER</div></div></header>
+<nav class="tabs">
+<button class="tab active" data-t="home">Home</button>
+<button class="tab" data-t="checkin">Check-In</button>
+<button class="tab" data-t="mission">Mission</button>
+<button class="tab" data-t="train">Train</button>
+<button class="tab" data-t="history">History</button>
+<button class="tab" data-t="programs">Programs</button>
+</nav>
+
+<section id="home" class="panel active">
+<div class="card"><div class="row"><div class="title">Momentum Score</div><div class="pill" id="momentumScore">0%</div></div><div class="bar"><span id="momentumBar"></span></div><div class="coach"><div class="coachTitle">Savage Coach</div><div id="coachMessage">Start with a morning check-in.</div></div></div>
+<div class="grid4">
+<div class="card"><div class="small">Weight</div><div class="big" id="statWeight">--</div></div>
+<div class="card"><div class="small">Waist</div><div class="big" id="statWaist">--</div></div>
+<div class="card"><div class="small">Streak</div><div class="big" id="statStreak">0</div></div>
+<div class="card"><div class="small">Workouts</div><div class="big" id="statWorkouts">0</div></div>
+</div>
+<div class="grid2">
+<div class="card"><div class="small">Protein Goal / Actual</div><div class="value" id="statProtein">--</div></div>
+<div class="card"><div class="small">Steps Goal / Actual</div><div class="value" id="statSteps">--</div></div>
+</div>
+<div class="card"><div class="title">Weight Trend</div><canvas id="weightChart" height="180"></canvas></div>
+<div class="card"><div class="title">Today's Mission Snapshot</div><div id="homeMission"></div></div>
+</section>
+
+<section id="checkin" class="panel">
+<div class="modes"><button class="mode active" data-m="morning">Morning</button><button class="mode" data-m="evening">Evening</button></div>
+<div class="card">
+<div class="row"><div class="title">Smart Check-In</div><div class="badge" id="modeLabel">MORNING</div></div>
+<div class="form">
+<input id="date" type="date" class="full">
+<div class="morning"><input id="weight" placeholder="Weight"><div class="hint">Example: 187.0</div></div>
+<div class="morning"><input id="waist" placeholder="Waist"><div class="hint">Example: 36.0 inches</div></div>
+<div class="morning"><select id="sleep"><option value="">Sleep quality</option><option value="3">3 rough</option><option value="5">5 okay</option><option value="7">7 solid</option><option value="9">9 excellent</option></select></div>
+<div><select id="energy"><option value="">Energy</option><option value="3">3 dragging</option><option value="5">5 okay</option><option value="7">7 solid</option><option value="9">9 strong</option><option value="10">10 peak</option></select></div>
+<div><select id="backPain"><option value="">Back pain</option><option value="0">0 none</option><option value="2">2 slight</option><option value="4">4 manageable</option><option value="6">6 limits</option><option value="8">8 severe</option><option value="10">10 stop</option></select></div>
+<div><select id="kneePain"><option value="">Knee pain</option><option value="0">0 none</option><option value="2">2 slight</option><option value="4">4 manageable</option><option value="6">6 limits</option><option value="8">8 severe</option><option value="10">10 stop</option></select></div>
+<div class="morning"><select id="proteinGoal"><option value="">Protein goal</option><option value="150">150 light</option><option value="190">190 goal</option><option value="220">220 aggressive</option></select></div>
+<div class="morning"><select id="stepsGoal"><option value="">Step goal</option><option value="4000">4000 minimum</option><option value="8000">8000 target</option><option value="10000">10000 strong</option></select></div>
+<div class="evening hidden"><input id="proteinActual" placeholder="Protein actual"><div class="hint">What you actually hit today</div></div>
+<div class="evening hidden"><input id="stepsActual" placeholder="Steps actual"><div class="hint">What you actually hit today</div></div>
+<div class="evening hidden"><select id="workoutDone"><option value="">Workout done?</option><option value="yes">Yes</option><option value="light">Light / partial</option><option value="no">No</option></select></div>
+<div class="evening hidden"><select id="nutritionCompliance"><option value="">Nutrition compliance</option><option value="clean">Stayed on plan</option><option value="mostly">Mostly on plan</option><option value="off">Off plan</option><option value="sugar">Had sugar</option><option value="alcohol">Had alcohol</option></select></div>
+<textarea id="notes" class="full" placeholder="Notes"></textarea>
+</div>
+<div class="row2"><button id="saveBtn">Save Check-In</button><button id="clearBtn" class="alt">Clear</button></div>
+<div id="status" class="ok"></div>
+</div>
+</section>
+
+<section id="mission" class="panel">
+<div class="card"><div class="row"><div class="title">Today's Mission</div><div class="badge" id="missionType">READY</div></div><div id="missionLead" class="headline smallspace">Complete your check-in to generate your mission.</div><div id="missionList"></div></div>
+<div class="card"><div class="title">Decision Engine</div><div class="hist" id="decisionReason">No mission generated yet.</div></div>
+</section>
+
+<section id="train" class="panel"><div id="trainList"></div></section>
+
+<section id="history" class="panel">
+<div class="card"><div class="row"><div class="title">Check-In History</div><button id="exportBtn" class="smallbtn">Export JSON</button></div><div id="checkinHistory"></div></div>
+<div class="card"><div class="title">Workout History</div><div id="workoutHistory"></div></div>
+</section>
+
+<section id="programs" class="panel">
+<div class="card"><div class="title">Programs</div><div class="programs"><button class="prog active" data-p="30 Day Reset">30 Day Reset</button><button class="prog" data-p="Travel Survival">Travel Survival</button><button class="prog" data-p="55+ Joint Smart Strength">55+ Joint Smart Strength</button><button class="prog" data-p="Belly Fat Kill Mode">Belly Fat Kill Mode</button></div><div class="ok" id="programStatus">Active program: 30 Day Reset</div></div>
+</section>
+</div><script src="app.js"></script></body></html>
