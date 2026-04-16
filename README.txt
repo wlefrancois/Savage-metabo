@@ -17,3 +17,5 @@ v5.4.1 program fix: program selection now force-refreshes Train and Home immedia
 v5.5 Progress Engine: adds Progress tab, weight/waist change, compliance, weekly score, and scorecard.
 
 v5.5.1 Navigation Repair: restores Programs tab visibility and stable mobile tab navigation with horizontal scrolling.
+
+v5.5.2 programs restore: force-restores Programs panel, buttons, and selection behavior.

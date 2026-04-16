@@ -98,3 +98,16 @@
 .progress-good{color:#6ee7b7}
 .progress-warn{color:#fde68a}
 .progress-bad{color:#fca5a5}
+
+/* v5.5.2 Programs restore */
+#programs .programs{
+  display:flex !important;
+  flex-wrap:wrap !important;
+  gap:8px !important;
+}
+#programs .prog{
+  display:inline-flex !important;
+  align-items:center;
+  justify-content:center;
+  min-height:44px;
+}

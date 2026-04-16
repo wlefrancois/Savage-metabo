@@ -751,3 +751,73 @@ setTimeout(() => {
     if (typeof renderHome === 'function') renderHome();
   }catch(e){}
 }, 150);
+
+
+/* ===== v5.5.2 Programs Restore ===== */
+function hardShowPanel(panelId){
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  const panel = document.getElementById(panelId);
+  const tab = document.querySelector(`.tab[data-t="${panelId}"]`);
+  if (panel) panel.classList.add('active');
+  if (tab) tab.classList.add('active');
+}
+
+function restoreProgramsButtons(){
+  const wrap = document.querySelector('#programs .programs');
+  if (!wrap) return;
+  // If buttons somehow disappeared, rebuild them.
+  if (!wrap.querySelector('.prog')) {
+    wrap.innerHTML = `
+      <button class="prog" data-p="30 Day Reset">30 Day Reset</button>
+      <button class="prog" data-p="Travel Survival">Travel Survival</button>
+      <button class="prog" data-p="55+ Joint Smart Strength">55+ Joint Smart Strength</button>
+      <button class="prog" data-p="Belly Fat Kill Mode">Belly Fat Kill Mode</button>
+    `;
+  }
+  wrap.querySelectorAll('.prog').forEach(btn => {
+    btn.onclick = () => {
+      if (typeof sp === 'function') sp(btn.dataset.p);
+      document.querySelectorAll('#programs .prog').forEach(x => x.classList.remove('active'));
+      btn.classList.add('active');
+      const status = document.getElementById('programStatus');
+      if (status) status.textContent = `Active program: ${btn.dataset.p}`;
+      try { if (typeof renderTrainByProgram === 'function') renderTrainByProgram(); } catch(e) {}
+      try { if (typeof renderHome === 'function') renderHome(); } catch(e) {}
+      try {
+        const impact = document.getElementById('programImpact');
+        const effect = document.getElementById('programEffect');
+        const txt = `${btn.dataset.p} selected. Train, mission, and home coaching should now follow this program.`;
+        if (impact) impact.textContent = txt;
+        if (effect) effect.textContent = txt;
+      } catch(e) {}
+    };
+  });
+  // Sync current active state
+  const current = (typeof gp === 'function') ? gp() : '30 Day Reset';
+  wrap.querySelectorAll('.prog').forEach(x => x.classList.toggle('active', x.dataset.p === current));
+}
+
+function restoreTabSystem(){
+  const tabs = document.querySelectorAll('.tab');
+  tabs.forEach(tab => {
+    tab.onclick = () => {
+      const target = tab.dataset.t;
+      hardShowPanel(target);
+      if (target === 'programs') {
+        restoreProgramsButtons();
+      }
+      if (target === 'train') {
+        try { if (typeof renderTrainByProgram === 'function') renderTrainByProgram(); } catch(e) {}
+      }
+      if (target === 'progress') {
+        try { if (typeof renderProgressEngine === 'function') renderProgressEngine(); } catch(e) {}
+      }
+    };
+  });
+}
+
+setTimeout(() => {
+  restoreTabSystem();
+  restoreProgramsButtons();
+}, 100);
