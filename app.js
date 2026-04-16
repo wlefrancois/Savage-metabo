@@ -192,3 +192,212 @@ if (typeof renderHome === 'function') {
 setTimeout(() => {
   try { if (typeof renderHome === 'function') renderHome(); } catch(e) {}
 }, 50);
+
+
+/* ===== v5.3 Program Engine ===== */
+function getProgramRules(programName){
+  const rules = {
+    "30 Day Reset": {
+      effect: "Prioritizes consistency, hydration, protein, and walking over intensity.",
+      missionPrefix: "RESET PROTOCOL",
+      coachSuffix: "Win the basics before chasing intensity.",
+      adjustments: {
+        stepsBias: 1,
+        intensity: "moderate",
+        note: "Consistency first."
+      }
+    },
+    "Travel Survival": {
+      effect: "Shifts toward shorter sessions, damage control, and maintaining momentum while away.",
+      missionPrefix: "TRAVEL SURVIVAL",
+      coachSuffix: "Protect momentum. Maintain, don’t gain.",
+      adjustments: {
+        stepsBias: -1,
+        intensity: "light",
+        note: "Shorter sessions and practical food choices."
+      }
+    },
+    "55+ Joint Smart Strength": {
+      effect: "Reduces joint stress, adds mobility emphasis, and favors safer training choices.",
+      missionPrefix: "JOINT SMART",
+      coachSuffix: "Protect the joints and keep the streak alive.",
+      adjustments: {
+        stepsBias: 0,
+        intensity: "controlled",
+        note: "Mobility and low joint stress matter more."
+      }
+    },
+    "Belly Fat Kill Mode": {
+      effect: "Pushes step compliance, tighter evening nutrition, and waist-focused discipline.",
+      missionPrefix: "FAT LOSS",
+      coachSuffix: "Tighten compliance and finish the day clean.",
+      adjustments: {
+        stepsBias: 2,
+        intensity: "firm",
+        note: "Steps and nutrition discipline matter most."
+      }
+    }
+  };
+  return rules[programName] || rules["30 Day Reset"];
+}
+
+function eliteMissionByProgram(e, scoreValue, programName){
+  const rules = getProgramRules(programName);
+  const back = Number(e?.backPain || 0);
+  const knee = Number(e?.kneePain || 0);
+  const sleep = Number(e?.sleep || 0);
+
+  if(programName === "55+ Joint Smart Strength"){
+    if(back >= 4 || knee >= 4){
+      return {
+        type: "JOINT SMART",
+        lead: "Train smart today. Protect the joints and build strength safely.",
+        items: [
+          "Choose supported or lower-impact movements.",
+          "Add mobility before training.",
+          "Skip ego lifting today."
+        ],
+        reason: "Joint Smart Strength lowers stress when pain signals are present."
+      };
+    }
+  }
+
+  if(programName === "Travel Survival"){
+    return {
+      type: "TRAVEL SURVIVAL",
+      lead: scoreValue >= 65
+        ? "Keep momentum on the road. Short, sharp, and disciplined."
+        : "Travel day reset. Protect momentum with practical wins.",
+      items: scoreValue >= 65
+        ? ["Do a shorter hotel-style session.", "Make one clean meal decision.", "Hit your minimum movement target."]
+        : ["Walk whenever possible.", "Keep meals simple and protein-first.", "Do not chase perfection today."],
+      reason: "Travel Survival prioritizes practicality and damage control over perfection."
+    };
+  }
+
+  if(programName === "Belly Fat Kill Mode"){
+    if(scoreValue >= 70){
+      return {
+        type: "FAT LOSS PUSH",
+        lead: "This is a fat-loss opportunity day. Stay sharp and finish clean.",
+        items: [
+          "Complete the workout.",
+          "Push steps above your minimum target.",
+          "Keep evening nutrition tight."
+        ],
+        reason: "Belly Fat Kill Mode rewards movement, discipline, and cleaner evenings."
+      };
+    }
+    return {
+      type: "FAT LOSS DISCIPLINE",
+      lead: "You don’t need a perfect day. You need a clean one.",
+      items: [
+        "Walk more than usual today.",
+        "Protein first at every meal.",
+        "Avoid nighttime drift."
+      ],
+      reason: "This program leans on behavior control when readiness is lower."
+    };
+  }
+
+  if(programName === "30 Day Reset"){
+    if(scoreValue >= 70){
+      return {
+        type: "RESET BUILD",
+        lead: "Build momentum with discipline, not chaos.",
+        items: [
+          "Complete the planned session.",
+          "Hit your protein goal.",
+          "Finish hydration and steps before bed."
+        ],
+        reason: "30 Day Reset favors consistency and clean execution."
+      };
+    }
+    return {
+      type: "RESET DAY",
+      lead: "Recovery wins today. Rebuild and return stronger.",
+      items: [
+        "Walk 10–20 minutes.",
+        "Keep meals simple and clean.",
+        "Get to bed earlier tonight."
+      ],
+      reason: "30 Day Reset lowers complexity and protects consistency."
+    };
+  }
+
+  // Fallback to existing elite coach flavor
+  return {
+    type: rules.missionPrefix,
+    lead: "Stay on plan and keep momentum moving.",
+    items: [
+      "Follow the program priority.",
+      "Stay disciplined tonight.",
+      "Protect the streak."
+    ],
+    reason: rules.effect
+  };
+}
+
+function computeProgramInsight(programName, checkins){
+  const rules = getProgramRules(programName);
+  const count = checkins?.length || 0;
+  if(!count){
+    return `${programName}: ${rules.effect}`;
+  }
+  const recent = [...checkins].sort((a,b)=>(a.date||'').localeCompare(b.date||'')).slice(-5);
+  const avgSteps = recent.map(x => Number(x.stepsActual || x.stepsGoal || 0)).filter(v=>v>0);
+  const avgProtein = recent.map(x => Number(x.proteinActual || x.proteinGoal || 0)).filter(v=>v>0);
+  const s = avgSteps.length ? Math.round(avgSteps.reduce((a,b)=>a+b,0)/avgSteps.length) : 0;
+  const p = avgProtein.length ? Math.round(avgProtein.reduce((a,b)=>a+b,0)/avgProtein.length) : 0;
+  return `${programName}: ${rules.effect} Recent average protein ${p || '--'}g. Recent average steps ${s || '--'}.`;
+}
+
+/* Wrap enhanced renderHome again */
+if (typeof renderHome === 'function') {
+  const _renderHomeV53Base = renderHome;
+  renderHome = function(){
+    _renderHomeV53Base();
+    try {
+      const checkins = typeof gc === 'function' ? gc() : [];
+      const latest = checkins.length ? [...checkins].sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0] : null;
+      const scoreEl = document.getElementById('momentumScore');
+      const scoreValue = scoreEl ? (Number(String(scoreEl.textContent).replace('%','')) || 0) : 0;
+      const programName = (typeof gp === 'function') ? gp() : '30 Day Reset';
+      const m = eliteMissionByProgram(latest, scoreValue, programName);
+
+      const missionTypeEl = document.getElementById('missionType');
+      const missionLeadEl = document.getElementById('missionLead');
+      const missionListEl = document.getElementById('missionList');
+      const decisionReasonEl = document.getElementById('decisionReason');
+      const homeMissionEl = document.getElementById('homeMission');
+      const coachMessageEl = document.getElementById('coachMessage');
+      const programEffectEl = document.getElementById('programEffect');
+      const programImpactEl = document.getElementById('programImpact');
+
+      if (missionTypeEl) missionTypeEl.textContent = m.type;
+      if (missionLeadEl) missionLeadEl.textContent = m.lead;
+      if (missionListEl) missionListEl.innerHTML = m.items.length ? m.items.map(x=>`<div class="missionchip">${x}</div>`).join('') : '<div class="hint">No mission yet.</div>';
+      if (decisionReasonEl) decisionReasonEl.textContent = m.reason;
+      if (homeMissionEl) homeMissionEl.innerHTML = m.items.length ? m.items.map(x=>`<div class="missionchip">${x}</div>`).join('') : '<div class="hint">No mission yet.</div>';
+      if (coachMessageEl) coachMessageEl.textContent = `${m.lead}`;
+      const insight = computeProgramInsight(programName, checkins);
+      if (programEffectEl) programEffectEl.textContent = insight;
+      if (programImpactEl) programImpactEl.textContent = insight;
+    } catch (err) {
+      console.log('Program engine enhancement error', err);
+    }
+  }
+}
+
+/* Re-render after program selection change */
+document.querySelectorAll('.prog').forEach(btn => {
+  btn.addEventListener('click', () => {
+    setTimeout(() => {
+      try { if (typeof renderHome === 'function') renderHome(); } catch(e) {}
+    }, 10);
+  });
+});
+
+setTimeout(() => {
+  try { if (typeof renderHome === 'function') renderHome(); } catch(e) {}
+}, 80);
