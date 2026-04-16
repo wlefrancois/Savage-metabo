@@ -554,3 +554,155 @@ document.querySelectorAll('.tab').forEach(btn => {
 setTimeout(() => {
   syncProgramUI();
 }, 250);
+
+
+/* ===== v5.5 Progress Engine ===== */
+function safeNum(v){
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function recentNumericTrend(items, field){
+  const vals = items
+    .map(x => ({date: x.date || '', value: safeNum(x[field])}))
+    .filter(x => x.value > 0)
+    .sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  if (vals.length < 2) return null;
+  const first = vals[0].value;
+  const last = vals[vals.length - 1].value;
+  return {first, last, delta: +(last - first).toFixed(1), count: vals.length};
+}
+
+function computeCompliance(checkins){
+  const recent = [...checkins].sort((a,b)=>(a.date||'').localeCompare(b.date||'')).slice(-7);
+  if (!recent.length) return null;
+  let points = 0;
+  recent.forEach(x => {
+    const protein = safeNum(x.proteinActual || x.proteinGoal);
+    const steps = safeNum(x.stepsActual || x.stepsGoal);
+    const nutrition = (x.nutritionCompliance || '').toLowerCase();
+    if (protein >= 150) points += 1;
+    if (steps >= 4000) points += 1;
+    if (nutrition === 'clean' || nutrition === 'mostly' || nutrition === '') points += 1;
+  });
+  const maxPoints = recent.length * 3;
+  return Math.round((points / maxPoints) * 100);
+}
+
+function computeWeeklyScore(checkins, workouts){
+  const recentCheckins = [...checkins].sort((a,b)=>(a.date||'').localeCompare(b.date||'')).slice(-7);
+  const recentWorkouts = [...workouts].sort((a,b)=>(a.date||'').localeCompare(b.date||'')).slice(-7);
+  let score = 0;
+  recentCheckins.forEach(x => {
+    score += Math.min(safeNum(x.energy || 0), 10) * 3;
+    score += Math.min(safeNum(x.sleep || 0), 10) * 2;
+    score += Math.max(0, 10 - safeNum(x.backPain || 0) - safeNum(x.kneePain || 0)) * 1.5;
+  });
+  score += recentWorkouts.length * 12;
+  const maxScore = Math.max(1, recentCheckins.length * (10*3 + 10*2 + 10*1.5) + 7*12);
+  return Math.round((score / maxScore) * 100);
+}
+
+function computeWorkoutFrequency(workouts){
+  const recent = [...workouts].sort((a,b)=>(a.date||'').localeCompare(b.date||'')).slice(-14);
+  return recent.length;
+}
+
+function progressClass(delta, directionGood){
+  if (delta === null || delta === undefined) return '';
+  if (directionGood === 'down'){
+    if (delta < 0) return 'progress-good';
+    if (delta > 0) return 'progress-bad';
+    return 'progress-warn';
+  }
+  if (directionGood === 'up'){
+    if (delta > 0) return 'progress-good';
+    if (delta < 0) return 'progress-bad';
+    return 'progress-warn';
+  }
+  return '';
+}
+
+function renderProgressEngine(){
+  const checkins = (typeof gc === 'function') ? gc() : [];
+  const workouts = (typeof gw === 'function') ? gw() : [];
+
+  const weightTrend = recentNumericTrend(checkins.slice(-10), 'weight');
+  const waistTrend = recentNumericTrend(checkins.slice(-10), 'waist');
+  const compliance = computeCompliance(checkins);
+  const weeklyScore = computeWeeklyScore(checkins, workouts);
+  const workoutFreq = computeWorkoutFrequency(workouts);
+
+  const weightEl = document.getElementById('weightChangeStat');
+  const waistEl = document.getElementById('waistChangeStat');
+  const compEl = document.getElementById('complianceStat');
+  const weeklyEl = document.getElementById('weeklyScoreStat');
+  const summaryEl = document.getElementById('progressSummary');
+  const strengthEl = document.getElementById('strengthProgress');
+  const scorecardEl = document.getElementById('weeklyScorecard');
+
+  if (weightEl){
+    if (weightTrend){
+      weightEl.textContent = `${weightTrend.delta > 0 ? '+' : ''}${weightTrend.delta} lb`;
+      weightEl.className = `big ${progressClass(weightTrend.delta, 'down')}`.trim();
+    } else {
+      weightEl.textContent = '--';
+    }
+  }
+
+  if (waistEl){
+    if (waistTrend){
+      waistEl.textContent = `${waistTrend.delta > 0 ? '+' : ''}${waistTrend.delta} in`;
+      waistEl.className = `big ${progressClass(waistTrend.delta, 'down')}`.trim();
+    } else {
+      waistEl.textContent = '--';
+    }
+  }
+
+  if (compEl) compEl.textContent = compliance !== null ? `${compliance}%` : '--';
+  if (weeklyEl) weeklyEl.textContent = `${weeklyScore}%`;
+
+  if (summaryEl){
+    if (!checkins.length){
+      summaryEl.textContent = 'Log check-ins and workouts to unlock progress insights.';
+    } else {
+      const wt = weightTrend ? `${weightTrend.delta > 0 ? 'up' : weightTrend.delta < 0 ? 'down' : 'flat'} ${Math.abs(weightTrend.delta)} lb` : 'not enough weight data';
+      const ws = waistTrend ? `${waistTrend.delta > 0 ? 'up' : waistTrend.delta < 0 ? 'down' : 'flat'} ${Math.abs(waistTrend.delta)} in` : 'not enough waist data';
+      summaryEl.textContent = `Recent trend: weight ${wt}, waist ${ws}, compliance ${compliance !== null ? compliance + '%' : '--'}, workouts in last 14 entries window: ${workoutFreq}.`;
+    }
+  }
+
+  if (strengthEl){
+    if (!workouts.length){
+      strengthEl.textContent = 'Complete workouts to build this section.';
+    } else {
+      const recent = [...workouts].sort((a,b)=>(a.date||'').localeCompare(b.date||'')).slice(-5);
+      const avgCompletion = Math.round(recent.reduce((acc,w)=>acc + (safeNum(w.completed)/Math.max(1,safeNum(w.total)))*100, 0) / recent.length);
+      strengthEl.textContent = `Recent workout completion quality: ${avgCompletion}%. Sessions logged: ${workouts.length}. Use this as your consistency strength marker until exercise-level load tracking is added.`;
+    }
+  }
+
+  if (scorecardEl){
+    const rows = [];
+    rows.push(`<div class="hist">Founder Discipline Score: ${weeklyScore}%</div>`);
+    rows.push(`<div class="hist">7-check-in Compliance: ${compliance !== null ? compliance + '%' : '--'}</div>`);
+    rows.push(`<div class="hist">Workout Frequency: ${workoutFreq} recent sessions logged</div>`);
+    if (weightTrend) rows.push(`<div class="hist">Weight Trend: ${weightTrend.delta > 0 ? '+' : ''}${weightTrend.delta} lb</div>`);
+    if (waistTrend) rows.push(`<div class="hist">Waist Trend: ${waistTrend.delta > 0 ? '+' : ''}${waistTrend.delta} in</div>`);
+    scorecardEl.innerHTML = rows.join('');
+  }
+}
+
+/* Hook into existing render cycle */
+if (typeof renderHome === 'function') {
+  const _renderHomeV55Base = renderHome;
+  renderHome = function(){
+    _renderHomeV55Base();
+    try { renderProgressEngine(); } catch(e) { console.log('progress render hook error', e); }
+  };
+}
+
+/* Refresh progress after check-in and workout completion */
+setTimeout(() => {
+  try { renderProgressEngine(); } catch(e) {}
+}, 120);

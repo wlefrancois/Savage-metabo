@@ -13,3 +13,5 @@ v5.3 Program Engine: Programs now affect mission wording, coaching, and program 
 v5.4 Program Workout Mapping: Program selection now changes the Train tab workout library and session-start flow.
 
 v5.4.1 program fix: program selection now force-refreshes Train and Home immediately.
+
+v5.5 Progress Engine: adds Progress tab, weight/waist change, compliance, weekly score, and scorecard.

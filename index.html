@@ -7,6 +7,7 @@
 <button class="tab" data-t="train">Train</button>
 <button class="tab" data-t="session">Session</button>
 <button class="tab" data-t="history">History</button>
+<button class="tab" data-t="progress">Progress</button>
 <button class="tab" data-t="programs">Programs</button>
 </nav>
 
@@ -102,7 +103,47 @@
 <section id="history" class="panel">
 <div class="card"><div class="row"><div class="title">Check-In History</div><button id="exportBtn" class="smallbtn">Export JSON</button></div><div id="checkinHistory"></div></div>
 <div class="card"><div class="title">Workout History</div><div id="workoutHistory"></div></div>
+
 </section>
+
+<section id="progress" class="panel">
+<div class="card">
+  <div class="title">Progress Engine</div>
+  <div id="progressSummary" class="hist">Log check-ins and workouts to unlock progress insights.</div>
+</div>
+
+<div class="grid4">
+  <div class="card">
+    <div class="small">Weight Change</div>
+    <div class="big" id="weightChangeStat">--</div>
+    <div class="small">recent trend</div>
+  </div>
+  <div class="card">
+    <div class="small">Waist Change</div>
+    <div class="big" id="waistChangeStat">--</div>
+    <div class="small">recent trend</div>
+  </div>
+  <div class="card">
+    <div class="small">Compliance</div>
+    <div class="big" id="complianceStat">--</div>
+    <div class="small">last 7 check-ins</div>
+  </div>
+  <div class="card">
+    <div class="small">Weekly Score</div>
+    <div class="big" id="weeklyScoreStat">--</div>
+    <div class="small">discipline score</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="title">Strength / Training Progress</div>
+  <div id="strengthProgress" class="hist">Complete workouts to build this section.</div>
+</div>
+
+<div class="card">
+  <div class="title">Weekly Scorecard</div>
+  <div id="weeklyScorecard"></div>
+</div>
 
 <section id="programs" class="panel">
 <div class="card"><div class="title">Programs</div><div class="programs"><button class="prog active" data-p="30 Day Reset">30 Day Reset</button><button class="prog" data-p="Travel Survival">Travel Survival</button><button class="prog" data-p="55+ Joint Smart Strength">55+ Joint Smart Strength</button><button class="prog" data-p="Belly Fat Kill Mode">Belly Fat Kill Mode</button></div><div class="ok" id="programStatus">Active program: 30 Day Reset</div></div>
