@@ -1,10 +1,11 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Savage Metabo v5.0</title><link rel="stylesheet" href="styles.css"></head><body><div class="app">
-<header class="hero"><div class="eyebrow">Carnivore Command Center</div><h1>Savage Metabo</h1><div class="sub">Founder Edition v5.0</div><div class="banner"><div><div class="small">Daily Operating System</div><div class="headline">Rebuild metabolism. Build momentum.</div></div><div class="badge">FOUNDER</div></div></header>
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Savage Metabo v5.1.1</title><link rel="stylesheet" href="styles.css"></head><body><div class="app">
+<header class="hero"><div class="eyebrow">Carnivore Command Center</div><h1>Savage Metabo</h1><div class="sub">Founder Edition v5.1.1</div><div class="banner"><div><div class="small">Daily Operating System</div><div class="headline">Mission fix build</div></div><div class="badge">FOUNDER</div></div></header>
 <nav class="tabs">
 <button class="tab active" data-t="home">Home</button>
 <button class="tab" data-t="checkin">Check-In</button>
 <button class="tab" data-t="mission">Mission</button>
 <button class="tab" data-t="train">Train</button>
+<button class="tab" data-t="session">Session</button>
 <button class="tab" data-t="history">History</button>
 <button class="tab" data-t="programs">Programs</button>
 </nav>
@@ -56,6 +57,24 @@
 </section>
 
 <section id="train" class="panel"><div id="trainList"></div></section>
+
+<section id="session" class="panel">
+<div class="card" id="sessionEmpty">Tap Start Session from Train.</div>
+<div class="card hidden" id="sessionCard">
+<div class="row"><div><div class="small">Workout</div><div id="sessionWorkout" class="title"></div></div><div id="sessionProgress" class="badge"></div></div>
+<div id="sessionIcon" class="icon bigIcon">💪</div>
+<div id="sessionExercise" class="big"></div>
+<div id="sessionCue" class="hint"></div>
+<a id="sessionWatch" class="video primary" href="#" target="_blank">▶ Watch Example</a>
+<div class="grid2">
+<div class="mini"><div class="small">Target</div><div id="sessionTarget" class="value">4 x 10</div></div>
+<div class="mini"><div class="small">Rest</div><div id="restDisplay" class="value">01:30</div></div>
+</div>
+<div class="row2"><button id="restBtn" class="alt">Start Rest</button><button id="doneBtn">Done Exercise</button></div>
+<div class="row2"><button id="skipBtn" class="alt">Skip</button><button id="finishBtn" class="alt">Finish Workout</button></div>
+<div id="sessionStatus" class="ok"></div>
+</div>
+</section>
 
 <section id="history" class="panel">
 <div class="card"><div class="row"><div class="title">Check-In History</div><button id="exportBtn" class="smallbtn">Export JSON</button></div><div id="checkinHistory"></div></div>
