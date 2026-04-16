@@ -79,3 +79,11 @@
     rgba(255,255,255,.03);
   border-color: rgba(245,158,11,.14);
 }
+
+/* v5.4 Program Workout Mapping */
+#trainProgramHint{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.05)),
+    rgba(255,255,255,.03);
+  border-color: rgba(245,158,11,.14);
+}

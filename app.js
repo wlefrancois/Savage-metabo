@@ -401,3 +401,156 @@ document.querySelectorAll('.prog').forEach(btn => {
 setTimeout(() => {
   try { if (typeof renderHome === 'function') renderHome(); } catch(e) {}
 }, 80);
+
+
+/* ===== v5.4 Program Workout Mapping ===== */
+const PROGRAM_WORKOUTS = {
+  "30 Day Reset": [
+    ["Walk + Core Reset","Low stress reset session",["Brisk walk 20 min","Bird Dog 3 rounds","McGill Curl-Up 3 rounds","Plank 3x30 sec"]],
+    ["Full Body Basic Strength","Controlled full-body base",["Incline DB Press 3x10","Chest Supported Row 3x10","Leg Press 3x12","Face Pull 3x15"]],
+    ["Recovery Pump","Get blood flow without overloading",["Cable Fly 3x15","Seated Cable Row 3x12","Lateral Raise 3x15","Hammer Curl 3x15"]],
+    ["Mobility Day","Recovery and movement quality",["Bird Dog 3 rounds","McGill Curl-Up 3 rounds","Plank 3x30 sec","Brisk walk 15 min"]]
+  ],
+  "Travel Survival": [
+    ["Hotel Room 20 Min","Fast bodyweight travel session",["Pushups burnout","Bodyweight box squat 3x12","Bird Dog 3x10","Brisk walk 10 min"]],
+    ["Dumbbell Express","Minimal equipment hotel session",["Flat DB Press 3x12","Goblet Squat 3x12","Chest Supported Row 3x12","Seated DB Shoulder Press 3x10"]],
+    ["Airport Mobility","Movement while traveling",["Bird Dog 3 rounds","McGill Curl-Up 3 rounds","Brisk walk 15 min","Plank 3x30 sec"]],
+    ["Treadmill Burn","Simple movement win",["Treadmill incline walk 20 min","Plank 3x30 sec","Face Pull 3x15"]]
+  ],
+  "55+ Joint Smart Strength": [
+    ["Joint Safe Push","Protected pressing emphasis",["Incline DB Press 3x10","Cable Fly 3x15","Rope Pushdown 3x12","Lateral Raise 3x15"]],
+    ["Back + Core Stability","Spine-friendly strength",["Chest Supported Row 4x10","Face Pull 3x15","Bird Dog 3 rounds","McGill Curl-Up 3 rounds"]],
+    ["Knee Friendly Legs","Lower stress lower body",["Leg Press 3x12","Hamstring Curl 3x15","Calf Raise 3x15","Side Plank 3 rounds"]],
+    ["Shoulder Armor","Upper body support work",["Seated DB Shoulder Press 3x10","Rear Delt Fly 3x15","Face Pull 3x15","Hammer Curl 3x15"]]
+  ],
+  "Belly Fat Kill Mode": [
+    ["Fat Burn Circuit","Higher movement density",["Incline DB Press 3x10","Chest Supported Row 3x10","Goblet Squat 3x12","Brisk walk 10 min"]],
+    ["Upper Density Day","Push pace and volume",["Flat DB Press 3x10","Lat Pulldown 3x12","Rope Pushdown 3x12","DB Curl 3x12"]],
+    ["Lower + Steps Combo","Legs plus movement bias",["Leg Press 3x12","Hamstring Curl 3x15","Calf Raise 3x15","Brisk walk 15 min"]],
+    ["Conditioning Blast","Finish strong",["Treadmill incline walk 20 min","Pushups burnout","Plank 3x30 sec","Farmer Carry 4 rounds"]]
+  ]
+};
+
+function getProgramWorkoutLibrary(){
+  const programName = (typeof gp === 'function') ? gp() : '30 Day Reset';
+  return PROGRAM_WORKOUTS[programName] || PROGRAM_WORKOUTS["30 Day Reset"];
+}
+
+function renderTrainByProgram(){
+  try {
+    const library = getProgramWorkoutLibrary();
+    const programName = (typeof gp === 'function') ? gp() : '30 Day Reset';
+    const hintEl = document.getElementById('trainProgramHint');
+    if (hintEl) {
+      hintEl.textContent = `${programName} is active. Train is now mapped to this program's workout library.`;
+    }
+    const listEl = document.getElementById('trainList');
+    if (!listEl) return;
+
+    listEl.innerHTML = library.map(w => {
+      const m = (typeof meta === 'function') ? meta(w[2][0]) : ["🎬","See example link for form.","1","work",60];
+      const links = w[2].map(x => `<a class="video" href="${link(x)}" target="_blank">${base(x)}</a>`).join(' ');
+      return `<div class="card">
+        <div class="row">
+          <div>
+            <div class="title">${w[0]}</div>
+            <div class="small">${w[1]}</div>
+          </div>
+          <div class="badge">${w[2].length} ex</div>
+        </div>
+        <div class="icon">${m[0]}</div>
+        <div class="hint">${m[1]}</div>
+        ${w[2].map(x=>`<div class="hist">${x}</div>`).join('')}
+        <div class="links">
+          <a class="video primary" href="${link(w[2][0])}" target="_blank">▶ Watch Main Exercise</a>
+          ${links}
+        </div>
+        <button class="start mapped-start" data-name="${w[0]}" style="margin-top:12px;width:100%">Start Session</button>
+      </div>`;
+    }).join('');
+
+    document.querySelectorAll('.mapped-start').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const selected = library.find(x => x[0] === btn.dataset.name);
+        if (selected && typeof startS === 'function') startS(selected);
+      });
+    });
+  } catch (err) {
+    console.log('Program workout mapping render error', err);
+  }
+}
+
+/* Override or wrap existing renderTrain */
+if (typeof renderTrain === 'function') {
+  renderTrain = function(){
+    renderTrainByProgram();
+  }
+}
+
+/* Re-render train whenever a program changes */
+document.querySelectorAll('.prog').forEach(btn => {
+  btn.addEventListener('click', () => {
+    setTimeout(() => {
+      try {
+        renderTrainByProgram();
+        if (typeof renderHome === 'function') renderHome();
+      } catch(e) {}
+    }, 20);
+  });
+});
+
+/* Run mapped training render after load */
+setTimeout(() => {
+  try { renderTrainByProgram(); } catch(e) {}
+}, 120);
+
+
+/* ===== v5.4.1 Program Change Sync Fix ===== */
+function syncProgramUI(){
+  try{
+    const programName = (typeof gp === 'function') ? gp() : '30 Day Reset';
+    document.querySelectorAll('.prog').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.p === programName);
+    });
+    if (typeof renderTrainByProgram === 'function') renderTrainByProgram();
+    if (typeof renderHome === 'function') renderHome();
+  }catch(err){
+    console.log('syncProgramUI error', err);
+  }
+}
+
+/* Override program button behavior so selection always re-renders immediately */
+document.querySelectorAll('.prog').forEach(btn => {
+  btn.onclick = () => {
+    try{
+      if (typeof sp === 'function') sp(btn.dataset.p);
+      document.getElementById('programStatus').textContent = `Active program: ${btn.dataset.p}`;
+      syncProgramUI();
+    }catch(err){
+      console.log('program button click error', err);
+    }
+  };
+});
+
+/* Also re-render Train any time Train tab is opened */
+document.querySelectorAll('.tab').forEach(btn => {
+  const originalClick = btn.onclick;
+  btn.onclick = () => {
+    if (originalClick) originalClick();
+    try{
+      if (btn.dataset.t === 'train') {
+        syncProgramUI();
+      }
+      if (btn.dataset.t === 'programs') {
+        document.querySelectorAll('.prog').forEach(p => p.classList.toggle('active', p.dataset.p === ((typeof gp === 'function') ? gp() : '30 Day Reset')));
+      }
+    }catch(err){
+      console.log('tab sync error', err);
+    }
+  };
+});
+
+/* Run one last hard sync after load */
+setTimeout(() => {
+  syncProgramUI();
+}, 250);

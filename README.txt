@@ -9,3 +9,7 @@ v5.1.4 home dashboard polish: upgraded stat tiles, mission chips, and home card 
 v5.2 Elite Coach Merge: built on v5.1.4 premium base with Founder Discipline score language, stronger mission wording, streak ranks, and weekly momentum insight.
 
 v5.3 Program Engine: Programs now affect mission wording, coaching, and program impact text.
+
+v5.4 Program Workout Mapping: Program selection now changes the Train tab workout library and session-start flow.
+
+v5.4.1 program fix: program selection now force-refreshes Train and Home immediately.
