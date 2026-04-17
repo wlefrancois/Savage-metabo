@@ -37,7 +37,7 @@ $('saveBtn').onclick=save;$('clearBtn').onclick=clearF;$('restBtn').onclick=()=>
 $('date').value=today();setMode(gm());$('programStatus').textContent=`Active program: ${gp()}`;document.querySelectorAll('.prog').forEach(b=>b.classList.toggle('active',b.dataset.p===gp()));renderTrain();renderHome();renderHistory();
 
 
-/* ===== v5.2 Elite Coach Merge Enhancements ===== */
+/* ===== v5.2 Programs restore build Enhancements ===== */
 function founderRankFromStreak(n){
   if(n >= 30) return 'Founder Standard';
   if(n >= 14) return 'Metabo Machine';
@@ -403,7 +403,7 @@ setTimeout(() => {
 }, 80);
 
 
-/* ===== v5.4 Program Workout Mapping ===== */
+/* ===== v5.4 Programs restore build ===== */
 const PROGRAM_WORKOUTS = {
   "30 Day Reset": [
     ["Walk + Core Reset","Low stress reset session",["Brisk walk 20 min","Bird Dog 3 rounds","McGill Curl-Up 3 rounds","Plank 3x30 sec"]],
@@ -556,7 +556,7 @@ setTimeout(() => {
 }, 250);
 
 
-/* ===== v5.5 Progress Engine ===== */
+/* ===== v5.5 Programs restore build ===== */
 function safeNum(v){
   const n = Number(v);
   return Number.isFinite(n) ? n : 0;
@@ -708,7 +708,7 @@ setTimeout(() => {
 }, 120);
 
 
-/* ===== v5.5.1 Navigation Repair ===== */
+/* ===== v5.5.1 Programs restore build ===== */
 function repairTabsNavigation(){
   try{
     const tabsContainer = document.querySelector('.tabs');
@@ -753,7 +753,7 @@ setTimeout(() => {
 }, 150);
 
 
-/* ===== v5.5.2 Programs Restore ===== */
+/* ===== v5.5.2 Programs restore build ===== */
 function hardShowPanel(panelId){
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));

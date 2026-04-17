@@ -58,7 +58,7 @@
   margin-top: 6px;
 }
 
-/* v5.2 Elite Coach Merge */
+/* v5.2 Programs restore build */
 .elite-grid .card{
   background:
     linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.05)),
@@ -80,7 +80,7 @@
   border-color: rgba(245,158,11,.14);
 }
 
-/* v5.4 Program Workout Mapping */
+/* v5.4 Programs restore build */
 #trainProgramHint{
   background:
     linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.05)),
@@ -88,7 +88,7 @@
   border-color: rgba(245,158,11,.14);
 }
 
-/* v5.5 Progress Engine */
+/* v5.5 Programs restore build */
 #weeklyScorecard .hist, #strengthProgress, #progressSummary{
   background:
     linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.05)),
